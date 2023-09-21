@@ -1,0 +1,77 @@
+```# Authors: Andrew Valdivia and Gabriel Barahona
+# September 12 2023
+# 
+
+import time
+from check_input import get_int_range
+
+def read_maze() -> list:
+    with open("maze.txt", "r") as file:
+        data = file.readlines()
+    
+    maze = [[] for _ in range(len(data))]
+    for row in range(len(data)):
+        for column in range(len(data[row])):
+            if data[row][column] != "\n": maze[row].append(data[row][column])
+
+    return maze
+
+
+def find_start(maze: list[list])-> tuple:
+    for row in range(len(maze)):
+        for column in range(len(maze[row])):
+            if maze[row][column] == 's':
+                return (row,column)
+
+def display_maze(maze: list[list], loc: tuple) -> None:
+    for row in range(len(maze)):
+        for column in range(len(maze[row])):
+            if row == loc[0] and column == loc[1]:
+                print(f'X',end = "")
+            else:
+                print(f'{maze[row][column]}',end = "")
+        print()
+
+
+def main():
+    game_maze: list = read_maze()
+    player_row,player_column = find_start(game_maze)
+    
+    collision = lambda loc, maze : maze[loc[0]][loc[1]] == "*"
+    #######################
+    print(f'-Maze Solver-')
+    #######################
+    while True:
+        display_maze(game_maze,(player_row,player_column))
+        option = get_int_range("1. Go North\n2. Go South\n3. Go East\n4. Go West\nEnter choice: ",1,4)
+
+        #################################################################
+        if option == 1 and not collision((player_row-1,player_column),maze=game_maze):
+            player_row -= 1
+        
+        elif option == 2 and not collision((player_row+1,player_column),maze=game_maze):
+            player_row += 1
+     
+        elif option == 3 and not collision((player_row,player_column+1),maze=game_maze):
+            player_column += 1
+
+        elif option == 4 and not collision((player_row,player_column-1),maze=game_maze):
+            player_column -= 1
+
+        else: print("You cannot move there.")
+        #################################################################
+
+        if game_maze[player_row][player_column] == 'f':
+            display_maze(game_maze,(player_row,player_column))
+            print("Congratulations! You solved the maze.")
+            break
+        else: print()
+
+
+
+if __name__ == "__main__":
+    start = time.time()
+    main()
+    time.sleep(0.5)
+    end = time.time()
+    print(f"\nRuntime of the program is {end - start}")```
